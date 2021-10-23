@@ -66,7 +66,16 @@ set noerrorbells
 
 " [DISABLED] flash the screen instead of beeping on errors.
 set novisualbell
-set termguicolors
+
+" needed so deoplete can auto select the first suggestion
+set completeopt+=noinsert
+" comment this line to enable autocompletion preview window
+" (displays documentation related to the selected completion option)
+set completeopt-=preview
+
+" autocompletion of files and commands behaves like shell
+" (complete only the common part, list the options that match)
+set wildmode=list:longest
 
 " if hidden is not set, TextEdit might fail.
 set hidden
@@ -83,38 +92,30 @@ set shortmess+=c
 " always show signcolumns
 set signcolumn=yes
 
-" enable mouse
+set background=dark
+filetype plugin on
 set mouse=a
 
-set background=dark
 
-" call InitPluginManager only for this file
 call plug#begin('~/.vim/plugged')
-
-" Better file browser
+Plug 'scrooloose/nerdcommenter'
+Plug 'francoiscabrol/ranger.vim'
+Plug 'miyakogi/seiya.vim'
+Plug 'neoclide/coc.nvim'
+Plug 'majutsushi/tagbar'
 Plug 'scrooloose/nerdtree'
-
-" Airline
 Plug 'vim-airline/vim-airline'
+Plug 'francoiscabrol/ranger.vim'
 Plug 'vim-airline/vim-airline-themes'
-
-" intellisense (autocompletion) engine for vim8 & neovim.
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-" MUST INSTALL CocInstall coc-lists coc-marketplace
-" THEN CocList marketplace TO INSTALL THE REST EXTENSIONS
-
-" Large collection of vim colorschemes
+Plug 'tpope/vim-fugitive'
 Plug 'flazz/vim-colorschemes'
-
-" File Fuzzy Finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-
-" useful overview of the code as a minimap sidebar.
+Plug 'ryanoasis/vim-devicons'
+Plug 'francoiscabrol/ranger.vim'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'scrooloose/syntastic'
 Plug 'severin-lemaignan/vim-minimap'
-
 call plug#end()
 
 " ============================================================================
@@ -130,30 +131,14 @@ map tt :tabnew
 map <F3> :tabn<CR>
 map <F2> :tabp<CR>
 
-" ============================================================================
-" COC CONFIGURATION
-" ============================================================================
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-            \ pumvisible() ? "\<C-n>" :
-            \ <SID>check_back_space() ? "\<TAB>" :
-            \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+" Ranger 
+let g:ranger_map_keys = 1
+map <F5> :Ranger<CR>
 
-" Use <c-space> for trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
-" Coc only does snippet and additional edit on confirm.
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-" coc-prettier
-" command! -nargs=0 Prettier :CocCommand prettier.formatFile
+"C plugin
+  let g:C_UseTool_cmake    = 'yes'
+  let g:C_UseTool_doxygen  = 'yes'
 
 
 " ============================================================================
@@ -164,15 +149,21 @@ nnoremap <C-p> :<C-u>FZF<CR>
 " ============================================================================
 " NERDTREE CONFIGURATION
 " ============================================================================
-" automatically open nerdtree when no file name specified
-" autocmd StdinReadPre * let s:std_in=1
-" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-" toggle nerdtree display
 map <F4> :NERDTreeToggle<CR>
-" open nerdtree with the current file selected
-nmap ,t :NERDTreeFind<CR>
-" don;t show these file types
+let NERDTreeShowHidden=1
+map ,t :NERDTreeToggle<CR>
 let NERDTreeIgnore = ['\.pyc$', '\.pyo$']
+
+"============================================================================
+" " NERDCOMMENTER CONFIGURATION
+" " ============================================================================
+" " Add spaces after comment delimiters by default
+ let g:NERDSpaceDelims = 1
+" " Use compact syntax for prettified multi-line comments
+ let g:NERDCompactSexyComs = 1
+" " Align line-wise comment delimiters flush left instead of following code indentation
+ let g:NERDDefaultAlign = 'left'
+ 
 
 " ============================================================================
 " MINIMAP CONFIGURATION
@@ -188,64 +179,75 @@ let g:minimap_highlight='Visual'
 " ============================================================================
 " set airline theme
 " let g:airline_theme = 'wombat'
-let g:airline_theme = 'onedark'
-" let g:airline_theme = 'base16'
-" displays all buffers when there's only one tab open
+ let g:airline_theme = 'onedark'
+" let g:airline_theme = 'deus'
+
 let g:airline#extensions#tabline#enabled = 1
-" separators can be configured independently for the tablne
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
-" populate the g:airline_symbols dictionary with the powerline symbols
 let g:airline_powerline_fonts = 1
-
-" ============================================================================
-" COLORSCHEME CONFIGURATION
-" ============================================================================
-" colorscheme kolor
-" coloscheme space-vim-dark
-" colorscheme dracula
-" let g:seoul256_background = 234
-" colorscheme seoul256
-" colorscheme seti
-" colorscheme darkspectrum
-" colorscheme wombat
-" colorscheme spacegray
-" colorscheme codedark
-colorscheme gruvbox
-"colorscheme nord
-
 " ============================================================================
 " VIM_DEV_ICONS CONFIGURATION
 " ============================================================================
 " loading the plugin
 let g:webdevicons_enable = 1
-" adding the flags to NERDTree
 let g:webdevicons_enable_nerdtree = 1
-" adding the custom source to unite
 let g:webdevicons_enable_unite = 1
-" adding the column to vimfiler
 let g:webdevicons_enable_vimfiler = 1
-" adding to vim-airline's tabline
 let g:webdevicons_enable_airline_tabline = 1
-" adding to vim-airline's statusline
 let g:webdevicons_enable_airline_statusline = 1
-" ctrlp glyphs
 let g:webdevicons_enable_ctrlp = 1
-" adding to vim-startify screen
 let g:webdevicons_enable_startify = 1
-" adding to flagship's statusline
 let g:webdevicons_enable_flagship_statusline = 1
-" turn on/off file node glyph decorations (not particularly useful)
 let g:WebDevIconsUnicodeDecorateFileNodes = 1
-" use double-width(1) or single-width(0) glyphs
-" only manipulates padding, has no effect on terminal or set(guifont) font
 let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
-" whether or not to show the nerdtree brackets around flags
 let g:webdevicons_conceal_nerdtree_brackets = 1
-" the amount of space to use after the glyph character (default ' ')
 let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
-" Force extra padding in NERDTree so that the filetype icons line up vertically
 let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
-" Adding the custom source to denite
 let g:webdevicons_enable_denite = 1
 
+" ============================================================================
+" INDENTLINE CONFIGURATION
+" ============================================================================
+" " customize conceal color
+let g:indentLine_color_term = 239
+let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+let g:indentLine_char_list = ['┊']
+
+
+" ============================================================================
+" INDENTGUIDE CONFIGURATION
+" ============================================================================
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_start_level           = 1
+let g:indent_guides_auto_colors           = 1
+let g:indent_guides_color_change_percent  = 10
+let g:indent_guides_space_guides          = 1
+let g:indent_guides_tab_guides            = 1
+let g:indent_guides_guide_size            = 1
+let g:indent_guides_exclude_filetypes     = ['help', 'nerdtree', 'startify', 'Preview','__doc__','rst']
+nmap <F8> :TagbarToggle<CR>
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+inoremap <silent><expr> <TAB>
+            \ pumvisible() ? "\<C-n>" :
+            \ <SID>check_back_space() ? "\<TAB>" :
+            \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+inoremap <silent><expr> <c-space> coc#refresh()
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+let g:seiya_auto_enable=1
+
+ colorscheme gruvbox
+ let g:ranger_map_keys = 1
+ let g:ranger_open_new_tab = 1
+ map f :Ranger<CR>.
