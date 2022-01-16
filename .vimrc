@@ -101,7 +101,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'scrooloose/nerdcommenter'
 Plug 'francoiscabrol/ranger.vim'
 Plug 'miyakogi/seiya.vim'
-Plug 'neoclide/coc.nvim'
 Plug 'majutsushi/tagbar'
 Plug 'scrooloose/nerdtree'
 Plug 'vim-airline/vim-airline'
